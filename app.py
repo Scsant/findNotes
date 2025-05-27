@@ -64,9 +64,9 @@ if fazenda_nome:
     guia_input = st.text_area("📑 Digite os números das guias (ex: 101, 102 ou uma por linha)")
 
     if guia_input:
-        # --- Tratamento de entrada ---
+        # --- Normalização da entrada (remover zeros à esquerda) ---
         guias_input_linhas = guia_input.replace(",", "\n").splitlines()
-        guias = [g.strip() for g in guias_input_linhas if g.strip().isdigit()]
+        guias = [g.strip().lstrip('0') or '0' for g in guias_input_linhas if g.strip().isdigit()]
         guias = list(set(guias))  # Remove duplicatas
 
         filtrados_dict = {}
@@ -75,7 +75,7 @@ if fazenda_nome:
         for file in total_fazenda:
             match = re.search(r"(\d+)\.pdf$", file.name)
             if match:
-                numero_arquivo = match.group(1)
+                numero_arquivo = match.group(1).lstrip('0') or '0'
                 if numero_arquivo in guias:
                     filtrados_dict[file.name] = file
                     guias_encontradas.add(numero_arquivo)
