@@ -1,6 +1,7 @@
 import streamlit as st
 import zipfile
 import io
+import re
 
 # --- CSS e Estilo ---
 st.markdown("""
@@ -72,17 +73,18 @@ if fazenda_nome:
         guias_encontradas = set()
 
         for file in total_fazenda:
-            for guia in guias:
-                if file.name.endswith(f"{guia}.pdf"):
+            match = re.search(r"(\d+)\.pdf$", file.name)
+            if match:
+                numero_arquivo = match.group(1)
+                if numero_arquivo in guias:
                     filtrados_dict[file.name] = file
-                    guias_encontradas.add(guia)
-                    break
+                    guias_encontradas.add(numero_arquivo)
 
         filtrados = list(filtrados_dict.values())
         guias_nao_encontradas = set(guias) - guias_encontradas
 
         st.markdown(f"### 📂 Arquivos encontrados: {len(filtrados)} de {len(total_fazenda)} carregados")
-       
+        st.success(f"✅ {len(guias_encontradas)} guias encontradas de {len(guias)} solicitadas.")
 
         if guias_nao_encontradas:
             with st.expander("🔍 Guias não encontradas"):
